@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SolarIQ - AI Renewable Intelligence & Agentic Load Management</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS for Interactive Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+        <div class="logo-group">
+            <i class="fa-solid fa-sun-plant-wilt logo-icon"></i>
+            <div>
+                <h1>SolarIQ</h1>
+                <span class="subtitle">AI-Integrated Renewable Energy Intelligence</span>
+            </div>
+        </div>
+
+        <div class="header-badges">
+            <!-- Live Running Clock & Date Badge -->
+            <div class="live-clock-badge" id="liveClockDisplay">
+                <i class="fa-regular fa-clock text-gold"></i>
+                <span id="clockTime" class="clock-time">05:58:00 AM</span>
+                <span class="clock-sep">|</span>
+                <span id="clockDate" class="clock-date">Tue, Aug 18, 2026</span>
+            </div>
+            
+            <span class="location-badge" id="currentLocationName"><i class="fa-solid fa-location-dot"></i> Coimbatore, TN</span>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <!-- 1. Top Metrics KPI Grid -->
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span>TEMPERATURE</span>
+                    <i class="fa-solid fa-temperature-half icon-temp"></i>
+                </div>
+                <div class="kpi-value" id="kpiTemp">27.1 <small>°C</small></div>
+                <div class="kpi-footer">Ambient Air Temp</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span>SOLAR RADIATION</span>
+                    <i class="fa-solid fa-sun icon-sun"></i>
+                </div>
+                <div class="kpi-value" id="kpiIrradiance">560 <small>W/m²</small></div>
+                <div class="kpi-footer">GHI Solar Irradiance</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span>CLOUD COVER</span>
+                    <i class="fa-solid fa-cloud icon-cloud"></i>
+                </div>
+                <div class="kpi-value" id="kpiCloud">58 <small>%</small></div>
+                <div class="kpi-footer">Sky Cloud Cover</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span>WIND SPEED</span>
+                    <i class="fa-solid fa-wind icon-wind"></i>
+                </div>
+                <div class="kpi-value" id="kpiWind">3.2 <small>m/s</small></div>
+                <div class="kpi-footer">Surface Wind Velocity</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span>RAINFALL</span>
+                    <i class="fa-solid fa-cloud-showers-heavy icon-rain"></i>
+                </div>
+                <div class="kpi-value" id="kpiRain">5.4 <small>mm</small></div>
+                <div class="kpi-footer">Hourly Precipitation</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span>DUST LEVEL</span>
+                    <i class="fa-solid fa-smog icon-dust"></i>
+                </div>
+                <div class="kpi-value" id="kpiDust">Medium</div>
+                <div class="kpi-footer">Panel Soiling Index</div>
+            </div>
+        </section>
+
+        <!-- 2. ARCHITECTURAL SMART HOUSE VISUALIZER & LIVE ENERGY FLOW ANIMATION -->
+        <section class="card house-visualizer-card">
+            <div class="card-header border-bottom">
+                <div>
+                    <h3><i class="fa-solid fa-house-chimney-crack text-gold"></i> Live Solar Villa Microgrid & Energy Flow Stage</h3>
+                    <p class="help-text">Real-time animation of volumetric solar beams, roof PV absorption, wallbox inverter, glowing power conduits, and individual appliance switches</p>
+                </div>
+                <div class="weather-status-tag" id="visualizerWeatherTag">
+                    <i class="fa-solid fa-sun text-gold"></i> Sunny Conditions
+                </div>
+            </div>
+
+            <!-- Architectural House Canvas Container -->
+            <div class="architectural-house-stage">
+                <!-- Sky Background Layer with Sun, Clouds & Rain -->
+                <div class="sky-weather-layer" id="skyWeatherLayer">
+                    <div class="sun-glow-orb" id="sunGlowOrb"></div>
+                    <!-- Volumetric Sunbeams angled onto Roof -->
+                    <div class="volumetric-sunbeams" id="volumetricSunbeams">
+                        <div class="sunbeam ray1"></div>
+                        <div class="sunbeam ray2"></div>
+                        <div class="sunbeam ray3"></div>
+                        <div class="sunbeam ray4"></div>
+                    </div>
+                    <div class="clouds-animated-layer" id="cloudsAnimatedLayer"></div>
+                    <div class="rain-animated-layer" id="rainAnimatedLayer"></div>
+                </div>
+
+                <!-- House Vector Illustration Container -->
+                <div class="house-vector-wrapper">
+                    <!-- SVG House Illustration & Energy Lines -->
+                    <svg viewBox="0 0 1000 600" class="house-svg">
+                        <defs>
+                            <!-- Solar Beams Gradient -->
+                            <linearGradient id="beamGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#fef08a" stop-opacity="0.8"/>
+                                <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.1"/>
+                            </linearGradient>
+
+                            <!-- Energy Flow Line Pattern -->
+                            <linearGradient id="energyGoldFlow" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#fde047"/>
+                                <stop offset="50%" stop-color="#f59e0b"/>
+                                <stop offset="100%" stop-color="#eab308"/>
+                            </linearGradient>
+
+                            <!-- EV Blue Cable Flow -->
+                            <linearGradient id="evBlueFlow" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#38bdf8"/>
+                                <stop offset="100%" stop-color="#0284c7"/>
+                            </linearGradient>
+                        </defs>
+
+                        <!-- House Main Structure Base -->
+                        <!-- 1. Ground / Deck -->
+                        <rect x="50" y="520" width="900" height="40" fill="#1e293b" rx="8"/>
+                        <rect x="700" y="470" width="220" height="50" fill="#334155" rx="4"/> <!-- Car Driveway -->
+
+                        <!-- 2. Main Wooden Accent Wall & Living Room -->
+                        <polygon points="120,240 580,120 620,135 620,520 120,520" fill="#2d2218" stroke="#453223" stroke-width="4"/>
+                        <rect x="140" y="340" width="240" height="175" fill="#1e1b18" stroke="#f59e0b" stroke-width="2" class="room-window-glow" id="windowLiving"/>
+                        <rect x="150" y="350" width="100" height="155" fill="rgba(254,240,138,0.2)" stroke="#ca8a04"/>
+                        <rect x="270" y="350" width="100" height="155" fill="rgba(254,240,138,0.2)" stroke="#ca8a04"/>
+
+                        <!-- 3. Upper Balcony & Bedroom Room -->
+                        <rect x="140" y="240" width="200" height="95" fill="#172554" stroke="#3b82f6" stroke-width="2" class="room-window-glow" id="windowHvac"/>
+                        <rect x="150" y="245" width="80" height="85" fill="rgba(147,197,253,0.3)" stroke="#60a5fa"/>
+
+                        <!-- 4. Garage Building & Wallbox Wall -->
+                        <rect x="620" y="240" width="280" height="280" fill="#1e293b" stroke="#475569" stroke-width="4"/>
+                        <rect x="640" y="260" width="120" height="110" fill="#1e1b18" stroke="#eab308" stroke-width="2" class="room-window-glow" id="windowUtility"/>
+
+                        <!-- 5. Solar Panel Roof Structure (Main Roof) -->
+                        <polygon points="100,240 580,110 630,130 110,255" fill="#0f172a" stroke="#0284c7" stroke-width="6"/>
+                        <!-- Solar Panels Matrix Grid -->
+                        <g class="pv-roof-grid" id="pvRoofGrid">
+                            <rect x="120" y="225" width="80" height="20" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5" transform="rotate(-15 120 225)"/>
+                            <rect x="210" y="200" width="80" height="20" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5" transform="rotate(-15 210 200)"/>
+                            <rect x="300" y="175" width="80" height="20" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5" transform="rotate(-15 300 175)"/>
+                            <rect x="390" y="150" width="80" height="20" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5" transform="rotate(-15 390 150)"/>
+                            <rect x="480" y="125" width="80" height="20" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5" transform="rotate(-15 480 125)"/>
+                        </g>
+
+                        <!-- 6. Wallbox Battery Inverter mounted on exterior wall -->
+                        <rect x="590" y="380" width="24" height="60" fill="#10b981" rx="4" stroke="#ffffff" stroke-width="2"/>
+                        <circle cx="602" cy="400" r="5" fill="#ffffff" class="inverter-pulse-dot"/>
+
+                        <!-- 7. EV Car Parked in Garage -->
+                        <g class="ev-car-group" id="evCarGroup">
+                            <path d="M 720 490 L 750 450 L 840 450 L 890 490 L 910 500 L 910 520 L 710 520 Z" fill="#e2e8f0" stroke="#0284c7" stroke-width="3"/>
+                            <!-- Car Wheels -->
+                            <circle cx="750" cy="520" r="16" fill="#0f172a" stroke="#cbd5e1" stroke-width="4"/>
+                            <circle cx="870" cy="520" r="16" fill="#0f172a" stroke="#cbd5e1" stroke-width="4"/>
+                            <!-- Car Window -->
+                            <path d="M 760 455 L 830 455 L 850 485 L 750 485 Z" fill="#38bdf8" opacity="0.7"/>
+                        </g>
+
+                        <!-- 8. ANIMATED ENERGY FLOW CABLE CONDUITS -->
+                        <path d="M 520 140 L 590 160 L 602 380" fill="none" stroke="url(#energyGoldFlow)" stroke-width="6" stroke-dasharray="12,6" class="animated-conduit-gold"/>
+                        <path d="M 602 440 L 602 495 L 720 495" fill="none" stroke="url(#evBlueFlow)" stroke-width="6" stroke-dasharray="10,5" class="animated-conduit-blue" id="conduitEv"/>
+                        <path d="M 590 400 L 380 400" fill="none" stroke="url(#energyGoldFlow)" stroke-width="5" stroke-dasharray="10,5" class="animated-conduit-gold"/>
+                    </svg>
+
+                    <!-- Roof Solar Generation Badge Overlay -->
+                    <div class="house-badge-card badge-pv-roof">
+                        <i class="fa-solid fa-solar-panel text-gold"></i>
+                        <div>
+                            <span>ROOF PV ARRAY GENERATION</span>
+                            <strong id="houseSolarWatts">2,130 W</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEPARATE INDIVIDUAL HOUSE APPLIANCE SWITCHES PANEL -->
+                <div class="house-switchboard-panel">
+                    <div class="switchboard-title">
+                        <i class="fa-solid fa-toggle-on text-gold"></i> Solar Villa Appliance Master Switchboard
+                    </div>
+                    <div class="switches-grid">
+                        <!-- Switch 1: HVAC -->
+                        <div class="house-switch-box" id="applianceHvac">
+                            <div class="switch-box-header">
+                                <i class="fa-solid fa-snowflake load-icon-hvac"></i>
+                                <div>
+                                    <h5>Load 1: HVAC / Air Conditioning</h5>
+                                    <span class="watt-tag">2,000 W | Priority 4 (Climate)</span>
+                                </div>
+                            </div>
+                            <div class="switch-box-footer">
+                                <span class="appliance-status-text" id="statusHvac">Active (ON)</span>
+                                <label class="switch">
+                                    <input type="checkbox" data-id="load_1" checked class="house-toggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Switch 2: EV Charger -->
+                        <div class="house-switch-box" id="applianceEv">
+                            <div class="switch-box-header">
+                                <i class="fa-solid fa-car-battery load-icon-ev"></i>
+                                <div>
+                                    <h5>Load 2: EV Fast Charger</h5>
+                                    <span class="watt-tag">3,300 W | Priority 5 (Garage EV)</span>
+                                </div>
+                            </div>
+                            <div class="switch-box-footer">
+                                <span class="appliance-status-text" id="statusEv">Active (ON)</span>
+                                <label class="switch">
+                                    <input type="checkbox" data-id="load_2" checked class="house-toggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Switch 3: Smart Water Heater -->
+                        <div class="house-switch-box" id="applianceWater">
+                            <div class="switch-box-header">
+                                <i class="fa-solid fa-hot-tub-person load-icon-water"></i>
+                                <div>
+                                    <h5>Load 3: Smart Water Heater</h5>
+                                    <span class="watt-tag">1,500 W | Priority 3 (Thermal)</span>
+                                </div>
+                            </div>
+                            <div class="switch-box-footer">
+                                <span class="appliance-status-text" id="statusWater">Active (ON)</span>
+                                <label class="switch">
+                                    <input type="checkbox" data-id="load_3" checked class="house-toggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Switch 4: Refrigeration -->
+                        <div class="house-switch-box" id="applianceFridge">
+                            <div class="switch-box-header">
+                                <i class="fa-solid fa-refrigerator load-icon-fridge"></i>
+                                <div>
+                                    <h5>Load 4: Refrigeration & Food</h5>
+                                    <span class="watt-tag">450 W | Priority 1 (Critical)</span>
+                                </div>
+                            </div>
+                            <div class="switch-box-footer">
+                                <span class="appliance-status-text" id="statusFridge">Active (ON)</span>
+                                <label class="switch">
+                                    <input type="checkbox" data-id="load_4" checked class="house-toggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Switch 5: Essential Lighting -->
+                        <div class="house-switch-box" id="applianceLights">
+                            <div class="switch-box-header">
+                                <i class="fa-solid fa-lightbulb load-icon-lights"></i>
+                                <div>
+                                    <h5>Load 5: Essential Lighting</h5>
+                                    <span class="watt-tag">250 W | Priority 2 (Essential)</span>
+                                </div>
+                            </div>
+                            <div class="switch-box-footer">
+                                <span class="appliance-status-text" id="statusLights">Active (ON)</span>
+                                <label class="switch">
+                                    <input type="checkbox" data-id="load_5" checked class="house-toggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Location Map & AI Power Generation Panel -->
+        <section class="grid-2col">
+            <div class="card map-card">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-map-location-dot"></i> Location Sensing & Search</h3>
+                    <span class="help-text">Search any city or click on the map</span>
+                </div>
+
+                <!-- Location Search Bar -->
+                <div class="map-search-bar" style="display: flex; gap: 8px; margin-bottom: 12px;">
+                    <input type="text" id="mapSearchInput" placeholder="Enter city name (e.g. Chennai, Delhi, London, Tokyo)..." style="flex:1; padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: inherit; font-size: 0.88rem; font-weight: 500;">
+                    <button id="btnMapSearch" class="btn btn-primary" style="padding: 10px 16px;"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+                </div>
+
+                <div id="map"></div>
+                <div class="map-coordinates" id="mapCoords">Lat: 11.0168°, Lon: 76.9558°</div>
+            </div>
+
+            <div class="card prediction-card">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-bolt"></i> AI Power Generation Prediction</h3>
+                </div>
+                
+
+
+                <div class="prediction-display">
+                    <div class="power-meter-box">
+                        <span class="watts-label">Predicted Generation Power</span>
+                        <div class="watts-number" id="predWatts">2,532 <small>Watts</small></div>
+                        <div class="power-breakdown">
+                            <span><i class="fa-solid fa-sun"></i> Solar: <strong id="predSolar">2,130 W</strong></span>
+                            <span><i class="fa-solid fa-wind"></i> Wind: <strong id="predWind">402 W</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="model-metrics-strip" id="modelMetrics">
+                    <span><strong>Confidence:</strong> 99.8%</span>
+                    <span><strong>Status:</strong> High Precision Sensing</span>
+                    <span><strong>Latency:</strong> Real-time (&lt;10ms)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. What-If Interactive Weather Simulator -->
+        <section class="card simulator-card">
+            <div class="card-header">
+                <div>
+                    <h3><i class="fa-solid fa-sliders"></i> What-If Weather Simulator</h3>
+                    <p class="help-text">Adjust sliders below to test live weather impacts on 3D generation and load balancing</p>
+                </div>
+            </div>
+            
+            <div class="sliders-grid">
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Solar Radiation</span>
+                        <strong id="valIrradiance">650 W/m²</strong>
+                    </div>
+                    <input type="range" id="slideIrradiance" min="0" max="1100" value="650" step="10">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Cloud Cover</span>
+                        <strong id="valCloud">25 %</strong>
+                    </div>
+                    <input type="range" id="slideCloud" min="0" max="100" value="25" step="1">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Temperature</span>
+                        <strong id="valTemp">32 °C</strong>
+                    </div>
+                    <input type="range" id="slideTemp" min="10" max="48" value="32" step="0.5">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Wind Speed</span>
+                        <strong id="valWind">4.5 m/s</strong>
+                    </div>
+                    <input type="range" id="slideWind" min="0" max="20" value="4.5" step="0.1">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Humidity</span>
+                        <strong id="valHumidity">55 %</strong>
+                    </div>
+                    <input type="range" id="slideHumidity" min="10" max="100" value="55" step="1">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Dust Soiling Level</span>
+                        <strong id="valDust">2.0 / 10</strong>
+                    </div>
+                    <input type="range" id="slideDust" min="0" max="10" value="2" step="0.5">
+                </div>
+            </div>
+
+            <div class="sim-actions">
+                <button id="btnRunSim" class="btn btn-primary"><i class="fa-solid fa-play"></i> Run AI Simulation</button>
+                <button id="btnResetSim" class="btn btn-secondary"><i class="fa-solid fa-rotate-left"></i> Reset Defaults</button>
+            </div>
+        </section>
+
+        <!-- 5. AGENTIC AI 5-CONNECTED LOADS & RECOMMENDATION ENGINE -->
+        <section class="agentic-section card">
+            <div class="card-header border-bottom">
+                <div>
+                    <h2><i class="fa-solid fa-robot text-gold"></i> Agentic AI Recommendation Engine</h2>
+                    <p class="subtitle">Autonomous 5-Load Deficit Monitoring & Generation Optimization</p>
+                </div>
+                <div class="battery-status">
+                    <i class="fa-solid fa-battery-three-quarters text-success"></i> Battery Storage SOC: <strong id="batterySocText">65%</strong>
+                </div>
+            </div>
+
+            <!-- AI Optimal Generation Time Window Advisory Banner -->
+            <div class="optimal-window-card" id="optimalWindowCard">
+                <div class="window-header">
+                    <i class="fa-solid fa-clock text-gold"></i>
+                    <div>
+                        <h4>AI Optimal Power Generation Window Today</h4>
+                        <p class="window-hours">Peak Generation Window: <strong>11:30 AM – 2:30 PM</strong> (Max Predicted Output: <strong id="vizPeakWatts">2,850 W</strong>)</p>
+                    </div>
+                </div>
+                <div class="window-suggestions">
+                    <span class="suggestion-chip"><i class="fa-solid fa-car-battery"></i> EV Charger: Best 12:00 PM – 2:00 PM (100% Clean Solar - Save ₹180)</span>
+                    <span class="suggestion-chip"><i class="fa-solid fa-hot-tub-person"></i> Water Heater: Best 1:00 PM – 2:00 PM</span>
+                    <span class="suggestion-chip"><i class="fa-solid fa-battery-full"></i> Battery Storage Charge: 11:00 AM – 3:00 PM</span>
+                </div>
+            </div>
+
+            <div class="power-summary-bar">
+                <div class="summary-item">
+                    <span>TOTAL AI GENERATION</span>
+                    <strong class="text-success" id="summaryGeneration">2,532 W</strong>
+                </div>
+                <div class="summary-divider"><i class="fa-solid fa-equals"></i></div>
+                <div class="summary-item">
+                    <span>ACTIVE LOAD DEMAND</span>
+                    <strong class="text-primary" id="summaryDemand">7,500 W</strong>
+                </div>
+                <div class="summary-divider"><i class="fa-solid fa-arrow-right"></i></div>
+                <div class="summary-item">
+                    <span>NET POWER BALANCE</span>
+                    <strong class="badge-deficit" id="summaryBalance">-4,968 W (DEFICIT)</strong>
+                </div>
+                <button class="btn btn-warning" id="btnAutoBalance"><i class="fa-solid fa-bolt-lightning"></i> 1-Click Auto-Balance Loads</button>
+            </div>
+
+            <div class="grid-2col agentic-content">
+                <!-- Left: 5 Connected Loads Manager -->
+                <div class="loads-manager">
+                    <h3><i class="fa-solid fa-plug-circle-bolt"></i> 5 Connected Loads Manager</h3>
+                    <p class="help-text">Toggle connected loads to observe live Agentic AI deficit reasoning</p>
+
+                    <div class="loads-list" id="loadsList">
+                        <!-- Dynamic 5 loads injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Right: Agentic AI Recommendations Feed -->
+                <div class="ai-recommendations-feed">
+                    <h3><i class="fa-solid fa-wand-magic-sparkles text-gold"></i> AI Agent Advisory & Recommendations</h3>
+                    
+                    <div id="aiAlertsContainer">
+                        <!-- Dynamic alerts injected here -->
+                    </div>
+
+                    <div class="recommendations-container" id="aiRecommendationsContainer">
+                        <!-- Dynamic recommendations injected here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Forecast Charts Section -->
+        <section class="grid-2col">
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-chart-line"></i> 7-Day Solar Radiation & Cloud Cover Forecast</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="solarChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-temperature-arrow-up"></i> 7-Day Temperature & Power Generation Forecast</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="tempChart"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <p>SolarIQ AI-Integrated Renewable Energy Intelligence Prototype | Developed by Rohith K (727623BEE072)</p>
+    </footer>
+
+    <!-- External JS Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Custom JS -->
+    <script src="js/main.js"></script>
+</body>
+</html>
